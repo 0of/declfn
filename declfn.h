@@ -55,8 +55,7 @@ namespace Traits {
 
   struct callable_trait {
     template<typename Callable>
-    static auto INVOKE(Callable&& callable, std::true_type isFunction) -> Traits::function_trait_t<std::remove_pointer_t<std::decay_t
-    <Callable>>>;
+    static auto INVOKE(Callable&& callable, std::true_type isFunction) -> Traits::function_trait_t<std::remove_pointer_t<std::decay_t<Callable>>>;
 
     template<typename Callable>
     static auto INVOKE(Callable&& callable, std::false_type isFunction) -> Traits::function_trait_t<decltype(&std::decay_t<Callable>::operator())>;
@@ -77,7 +76,7 @@ namespace Traits {
 } // Traits
 
 #ifndef declfn
-# define declfn(fn) decltype(Traits::callable_trait::INVOKE(fn, std::is_function<std::remove_pointer_t<std::remove_reference_t<decltype(fn)>>>()))
+# define declfn(expr) decltype(Traits::callable_trait::INVOKE(expr, std::is_function<std::remove_pointer_t<std::remove_reference_t<decltype(expr)>>>()))
 #endif // declfn
 
 #endif // DECLFN_H
