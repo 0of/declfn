@@ -14,39 +14,14 @@ static bool raw_returned_fn() { return true; }
 static void raw_int_arg_fn(int) {}
 static void raw_ref_arg_fn(int& ) {}
 
-// member function
-// TODO: not support
-// class Class {
-// public:
-//     bool returned_mem_fn() { return true; }
-//     void int_arg_mem_fn(int) {}
-//     void int_arg_const_mem_fn(int) const {}
-//     void int_arg_cv_mem_fn(int) const volatile {}
-//     void int_arg_volatile_mem_fn(int) volatile {}
-// };
-
 namespace Functor {
   class returned {
   public:
       bool operator()() { return true; }
   };
-  
-  class int_arg {
-      void operator()(int) {}
-  };
-
-  class int_arg_const {
-      void operator()(int) const {}
-  };
-  
-  class int_arg_cv {
-      void operator()(int) const volatile {}
-  };
-
-  class int_arg_volatile {
-      void operator()(int) volatile {}
-  };
 }
+
+class NormalClass {};
 
 int main(int argc, const char * argv[]) {    
 #warning "it should be cast to `std::function<bool()>` when given raw_returned_fn"
@@ -61,29 +36,29 @@ int main(int argc, const char * argv[]) {
     Functor::returned functor;
     static_assert(std::is_same<std::function<bool()>, declfn(functor)>::value, "!");
   }
-// #warning "it should be cast to `std::function<void(int)>` when given Functor::int_arg instance"
-//   {
-//     Functor::int_arg functor;
-//     static_assert(std::is_same<std::function<void(int)>, declfn(functor)>::value, "!");
-//   }
-// #warning "it should be cast to `std::function<void(int)>` when given Functor::int_arg_const instance"
-//   {
-//     Functor::int_arg_const functor;
-//     static_assert(std::is_same<std::function<void(int)>, declfn(functor)>::value, "!");
-//   }
-// #warning "it should be cast to `std::function<void(int)>` when given Functor::int_arg_cv instance"
-//   {
-//     Functor::int_arg_cv functor;
-//     static_assert(std::is_same<std::function<void(int)>, declfn(functor)>::value, "!");
-//   } 
-// #warning "it should be cast to `std::function<void(int)>` when given Functor::int_arg_volatile instance"
-//   {
-//     Functor::int_arg_volatile functor;
-//     static_assert(std::is_same<std::function<void(int)>, declfn(functor)>::value, "!");
-//   }
 
-// #warning "it should be cast to `std::function<bool()>` when given bind raw_returned_fn"
-//    static_assert(std::is_same<std::function<void()>, declfn(std::bind(raw_int_arg_fn, 6))>::value, "!");
+#warning "it should be cast to `std::function<bool()>` when given returned lambda expression"
+  {
+    auto lambda = [] { return true; };
+    static_assert(std::is_same<std::function<bool()>, declfn(lambda)>::value, "!");
+  }
 
-    return 0;
+#warning "it should be cast to `std::function<void(int)>` when given returned lambda expression"
+  {
+    auto lambda = [](int) {};
+    static_assert(std::is_same<std::function<void(int)>, declfn(lambda)>::value, "!");
+  }
+
+#warning "it should be same to `std::function<bool(void)>` when given `std::function<bool(void)>` instance"
+  {
+    std::function<bool(void)> fn;
+    static_assert(std::is_same<std::function<bool(void)>, declfn(fn)>::value, "!");
+  }
+
+#warning "it should be false type when given non-callable"
+  {
+    NormalClass instance;
+    static_assert(std::is_same<std::false_type, declfn(instance)>::value, "!");
+  }
+  return 0;
 }
