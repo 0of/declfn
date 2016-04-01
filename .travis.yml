@@ -30,6 +30,6 @@ install:
   - if [[ "$CXX" == "clang++" ]]; then export CXX="clang++" CC="clang"; fi
   - $CXX --version
   - cmake .
+
+script:
   - make all
-
-
