@@ -13,7 +13,7 @@
 // MSVC specific keyword
 #define ECHO(content) __pragma(message(#content))
 #else
-#define ECHO(content) _pragma(R"(message("content"))")
+#define ECHO(content) _Pragma(R"(message("content"))")
 #endif  // _MSC_VER
 
 // function
