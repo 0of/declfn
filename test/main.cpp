@@ -9,7 +9,12 @@
 #include <functional>
 #include "../declfn.h"
 
-#define ECHO(message) _Pragma(R"(message("message"))")
+#ifdef _MSC_VER
+// MSVC specific keyword
+#define ECHO(content) __pragma(message(#content))
+#else
+#define ECHO(content) _pragma(R"(message("content"))")
+#endif  // _MSC_VER
 
 // function
 static bool raw_returned_fn() { return true; }
